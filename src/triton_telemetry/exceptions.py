@@ -1,8 +1,8 @@
-﻿# src/triton_telemetry/exceptions.py
+# src/triton_telemetry/exceptions.py
 # ROL 1 - Ingeniero de Robustez de Entradas y Excepciones
 
-# TODO(Rol 1): Crear la excepciÃ³n base TritonError heredando de Exception
-# (NUNCA de BaseException, para no capturar seÃ±ales de sistema como Ctrl+C)
+# TODO(Rol 1): Crear la excepción base TritonError heredando de Exception
+# (NUNCA de BaseException, para no capturar señales de sistema como Ctrl+C)
 class TritonError(Exception):
     pass
 
@@ -17,6 +17,6 @@ class CorruptedPayloadError(TritonError):
     pass
 
 
-# TODO(Rol 1): Subclase para fallos de DNS o resoluciÃ³n de hosts
+# TODO(Rol 1): Subclase para fallos de DNS o resolución de hosts
 class NetworkPeeringError(TritonError):
     pass

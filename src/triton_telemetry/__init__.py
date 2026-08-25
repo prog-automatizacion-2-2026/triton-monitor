@@ -1,4 +1,4 @@
-﻿# src/triton_telemetry/__init__.py
+# src/triton_telemetry/__init__.py
 
 from .exceptions import TritonError, ProviderTimeoutError, CorruptedPayloadError, NetworkPeeringError
 from .sanitizer import parse_timeout, parse_cluster_id
