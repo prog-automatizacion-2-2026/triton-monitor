@@ -1,5 +1,5 @@
-﻿# src/app_operator.py
-# ROL 5 - Coordinador de IntegraciÃ³n y Flujo CLI
+# src/app_operator.py
+# ROL 5 - Coordinador de Integración y Flujo CLI
 
 import argparse
 import asyncio
@@ -29,12 +29,12 @@ def build_cli_parser() -> argparse.ArgumentParser:
 
 async def async_main():
     """
-    TODO(Rol 5): 
-    - Parsear argumentos y loguear el inicio de la operaciÃ³n
+    TODO(Rol 5):
+    - Parsear argumentos y loguear el inicio de la operación
     - try: await scan_all_providers(...)
     - except* ProviderTimeoutError / NetworkPeeringError / CorruptedPayloadError / TritonError:
       reportar cada grupo iterando group.exceptions
-    - finally: detener el listener de logging (SIN return/break/continue acÃ¡, PEP 765)
+    - finally: detener el listener de logging (SIN return/break/continue acá, PEP 765)
     """
     raise NotImplementedError
 
