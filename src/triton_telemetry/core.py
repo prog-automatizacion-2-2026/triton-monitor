@@ -68,9 +68,18 @@ async def query_provider_telemetry(provider: str, timeout: float, use_chaos: boo
 
 
 async def scan_all_providers(providers: list[str], timeout: float, use_chaos: bool = False) -> list[Dict[str, Any]]:
-    """
-    TODO(Rol 2): Orquestar las consultas en paralelo con asyncio.TaskGroup.
-    Cada tarea individual debe crearse con tg.create_task(..., name=f"Task-{provider}")
-    para que quede trazable en los logs.
-    """
-    raise NotImplementedError
+    tasks = []
+    results = []
+
+    async with asyncio.TaskGroup() as tg:
+        for provider in providers:
+            task = tg.create_task(
+                query_provider_telemetry(provider, timeout, use_chaos),
+                name=f"Task-{provider}"
+            )
+            tasks.append(task)
+
+    for task in tasks:
+        results.append(task.result())
+
+    return results
