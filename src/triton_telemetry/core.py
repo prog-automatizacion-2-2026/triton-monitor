@@ -25,20 +25,46 @@ CHAOS_ENDPOINTS = {
 
 
 async def query_provider_telemetry(provider: str, timeout: float, use_chaos: bool = False) -> Dict[str, Any]:
-    url = PROVIDER_ENDPOINTS[provider]
+    if use_chaos:
+        if provider == "AWS":
+            url = CHAOS_ENDPOINTS["TIMEOUT_TRIGGER"]
+        elif provider == "Azure":
+            url = CHAOS_ENDPOINTS["BAD_GATEWAY_TRIGGER"]
+        else:
+            url = CHAOS_ENDPOINTS["CORRUPTED_TRIGGER"]
+    else:
+        url = PROVIDER_ENDPOINTS[provider]
 
     async with httpx.AsyncClient() as client:
-        response = await client.get(url, timeout=timeout)
-        response.raise_for_status()
+        try:
+            response = await client.get(url, timeout=timeout)
+            response.raise_for_status()
 
-        data = response.json()
+            data = response.json()
 
-        return {
-            "provider": provider,
-            "status": "NOMINAL",
-            "latency_sec": response.elapsed.total_seconds(),
-            "payload_id": data.get("id", -1)
-        }
+            return {
+                "provider": provider,
+                "status": "NOMINAL",
+                "latency_sec": response.elapsed.total_seconds(),
+                "payload_id": data.get("id", -1)
+            }
+
+        except httpx.TimeoutException as err:
+            p_err = ProviderTimeoutError(
+                f"Se agotó el tiempo de espera ({timeout}s) al conectar con {provider}."
+            )
+            p_err.add_note(f"Provider_ID: {provider}")
+            p_err.add_note(f"Requested_Timeout_Limit: {timeout}s")
+            p_err.add_note(f"Target_Endpoint: {url}")
+            raise p_err from err
+
+        except httpx.HTTPStatusError as err:
+            n_err = NetworkPeeringError(
+                f"Fallo de conexión o denegación de ruteo de {provider}. Estatus HTTP: {err.response.status_code}."
+            )
+            n_err.add_note(f"Provider_ID: {provider}")
+            n_err.add_note(f"HTTP_Status_Code: {err.response.status_code}")
+            raise n_err from err
 
 
 async def scan_all_providers(providers: list[str], timeout: float, use_chaos: bool = False) -> list[Dict[str, Any]]:
