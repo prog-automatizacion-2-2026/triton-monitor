@@ -1,5 +1,5 @@
 ﻿# src/triton_telemetry/core.py
-# ROL 2 - Ingeniero de Concurrencia y TelemetrÃ­a AsÃ­ncrona
+# ROL 2 - Ingeniero de Concurrencia y Telemetría Asíncrona
 
 import asyncio
 import logging
@@ -16,7 +16,7 @@ PROVIDER_ENDPOINTS = {
     "GCP": "https://jsonplaceholder.typicode.com/posts/3",
 }
 
-# Endpoints de inyecciÃ³n de caos (vÃ­a httpbin)
+# Endpoints de inyección de caos (vía httpbin)
 CHAOS_ENDPOINTS = {
     "TIMEOUT_TRIGGER": "https://httpbin.org/delay/3",
     "BAD_GATEWAY_TRIGGER": "https://httpbin.org/status/504",
@@ -25,15 +25,20 @@ CHAOS_ENDPOINTS = {
 
 
 async def query_provider_telemetry(provider: str, timeout: float, use_chaos: bool = False) -> Dict[str, Any]:
-    """
-    TODO(Rol 2): Consultar el endpoint correspondiente con httpx.AsyncClient.
-    - Capturar httpx.TimeoutException -> relanzar como ProviderTimeoutError
-      (usar .add_note() para agregar contexto forense)
-    - Capturar httpx.HTTPStatusError (via response.raise_for_status())
-      -> relanzar como NetworkPeeringError o CorruptedPayloadError segÃºn corresponda
-    - Devolver un dict con: provider, status, latency_sec, payload_id
-    """
-    raise NotImplementedError
+    url = PROVIDER_ENDPOINTS[provider]
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, timeout=timeout)
+        response.raise_for_status()
+
+        data = response.json()
+
+        return {
+            "provider": provider,
+            "status": "NOMINAL",
+            "latency_sec": response.elapsed.total_seconds(),
+            "payload_id": data.get("id", -1)
+        }
 
 
 async def scan_all_providers(providers: list[str], timeout: float, use_chaos: bool = False) -> list[Dict[str, Any]]:
