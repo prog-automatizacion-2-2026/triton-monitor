@@ -1,22 +1,21 @@
 # src/triton_telemetry/exceptions.py
 # ROL 1 - Ingeniero de Robustez de Entradas y Excepciones
 
-# TODO(Rol 1): Crear la excepción base TritonError heredando de Exception
-# (NUNCA de BaseException, para no capturar señales de sistema como Ctrl+C)
 class TritonError(Exception):
+    """Excepción base para todos los fallos del ecosistema TritonMonitor."""
     pass
 
 
-# TODO(Rol 1): Subclase para timeouts de red
 class ProviderTimeoutError(TritonError):
+    """Lanzada cuando un proveedor de nube supera el tiempo de espera (timeout) establecido."""
     pass
 
 
-# TODO(Rol 1): Subclase para respuestas corruptas o estatus HTTP fallidos
 class CorruptedPayloadError(TritonError):
+    """Lanzada cuando la respuesta recibida del proveedor cloud no cumple con el formato o está corrupta."""
     pass
 
 
-# TODO(Rol 1): Subclase para fallos de DNS o resolución de hosts
 class NetworkPeeringError(TritonError):
+    """Lanzada cuando existen fallos de resolución de DNS, ruteo o denegación de conexión física (4xx, 5xx)."""
     pass
